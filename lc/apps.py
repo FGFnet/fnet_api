@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class FglistConfig(AppConfig):
+class LcConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'fgList'
+    name = 'lc'
