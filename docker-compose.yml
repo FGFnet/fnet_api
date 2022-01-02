@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  fnet-mysql:
+    image: mysql:8.0.27
+    container_name: fnet-mysql
+    restart: always
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=fnet
+      - MYSQL_USER=fnet
+      - MYSQL_PASSWORD=fnet
+  
+  fnet-api:
+    image: coc0a25/fnet:test
+    container_name: fnet-api
+    restart: always
+    depends_on:
+      - fnet-mysql
+    volumes:
+      - ./data/django:/data
+    environment:
+      - MYSQL_DATABASE=fnet
+      - MYSQL_USER=fnet
+      - MYSQL_PASSWORD=fnet
+    ports:
+      - "0.0.0.0:9000:8000" # for development
+      # - "0.0.0.0:80:8000" # for production

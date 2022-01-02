@@ -1,0 +1,22 @@
+# Container Volume Mount
+/data
+
+# Python Virtual Environment
+**/.env
+**/.venv
+**/env/
+**/venv/
+**/ENV/
+**/env.bak/
+**/venv.bak/
+**/pythonenv*
+
+# IDE Setting
+**/.idea
+**/.vscode
+
+# Git
+.git
+
+# Mac OS
+**/.DS_Store
