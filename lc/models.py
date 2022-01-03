@@ -10,3 +10,7 @@ class LC(models.Model):
     name = CharField(max_length=10)
     total = IntegerField()
     schedule = DateField(null=True)
+
+    class Meta:
+        db_table = 'lc'
+        ordering = ['name']

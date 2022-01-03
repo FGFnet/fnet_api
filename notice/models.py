@@ -11,9 +11,17 @@ class Notice(models.Model):
     content = TextField(blank=True)
     create_time = DateTimeField(auto_now_add=True, blank=True)
 
+    class Meta:
+        db_table = 'notice'
+        ordering = ['-create_time']
+
 class Comment(models.Model):
     notice = ForeignKey(Notice, on_delete=CASCADE)
     created_by = ForeignKey(FG, on_delete=CASCADE)
     content = TextField(null=True)
     create_time = DateTimeField(auto_now_add=True, blank=True)
     check = BooleanField(default=False)
+
+    class Meta:
+        db_table = 'comment'
+        ordering = ['check', '-create_time']

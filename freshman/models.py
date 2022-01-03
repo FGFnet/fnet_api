@@ -13,3 +13,7 @@ class Freshman(models.Model):
     register = BooleanField(default=False)
     department = CharField(max_length=30, null=True)
     sex = CharField(max_length=10, null=True)
+
+    class Meta:
+        db_table = 'freshman'
+        ordering = ['lc', 'name']
