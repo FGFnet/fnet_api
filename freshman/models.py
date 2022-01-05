@@ -9,10 +9,10 @@ from lc.models import LC
 class Freshman(models.Model):
     lc = ForeignKey(LC, on_delete=CASCADE)
     name = CharField(max_length=30)
-    phone_number = CharField(max_length=11, validators=[MinLengthValidator(11)], null=True)
+    student_id = CharField(max_length=10, validators=[MinLengthValidator(10)], null=True)
+    phone_number = CharField(max_length=13, null=True)
     register = BooleanField(default=False)
     department = CharField(max_length=30, null=True)
-    sex = CharField(max_length=10, null=True)
 
     class Meta:
         db_table = 'freshman'

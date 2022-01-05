@@ -25,5 +25,5 @@ services:
       - MYSQL_USER=fnet
       - MYSQL_PASSWORD=fnet
     ports:
-      - "0.0.0.0:9000:8000" # for development
+      - "0.0.0.0:40000:8000" # for development
       # - "0.0.0.0:80:8000" # for production
