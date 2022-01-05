@@ -22,4 +22,7 @@ urlpatterns = [
     path('admin/', include('notice.urls.admin')),
     path('', include("fg.urls.user")),
     path('admin/', include("fg.urls.admin")),
+    path('', include('lc.urls')),
+    path('admin/', admin.site.urls),
+    # path('', include=('lc.urls')),
 ]
