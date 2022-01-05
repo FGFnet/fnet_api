@@ -112,10 +112,11 @@ class FreshmanFileUploadAPI(APIView):
 def getLCMemberList(request):
     error = False
     lc_id = request.GET.get("id")
+    register = request.GET.get("register")
     if not lc_id:
         data = "LC id is required"
         error = True
     else:
-        queryset = Freshman.objects.filter(lc_id=lc_id)
+        queryset = Freshman.objects.filter(lc_id=lc_id, register=register)
         data = FreshmanSerializer(queryset, many=True).data
     return Response({"error": error, "data": data})
