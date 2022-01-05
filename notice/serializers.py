@@ -17,3 +17,9 @@ class NoticeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notice
         fields = "__all__"
+
+
+class CommentAdminSerializer(serializers.Serializer):
+    notice_id = serializers.IntegerField()
+    comment_id = serializers.IntegerField()
+    check = serializers.BooleanField()

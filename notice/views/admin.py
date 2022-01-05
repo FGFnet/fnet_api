@@ -1,16 +1,7 @@
-from ..models import Notice
-from ..serializers import CreateNoticeSerializer, EditNoticeSerializer, NoticeSerializer
+from ..models import Comment, Notice
+from ..serializers import CommentAdminSerializer, CreateNoticeSerializer, EditNoticeSerializer, NoticeSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-
-def invalid_serializer(self, serializer):
-    key, error = self.extract_errors(serializer.errors)
-    if key == "non_field_errors":
-        msg = error
-    else:
-        msg = f"{key}: {error}"
-    return {"error": True, "data": msg}
 
 
 class NoticeAdminAPI(APIView):
@@ -19,16 +10,13 @@ class NoticeAdminAPI(APIView):
         create notice
         """
         serializer = CreateNoticeSerializer(data=request.data)
-        if not serializer.is_valid():
-            error = invalid_serializer(serializer)
-            return Response(error)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
 
-        error = False
-        notice = Notice.objects.create(title=serializer["title"],
-                                       content=serializer["content"],
+        notice = Notice.objects.create(title=data["title"],
+                                       content=data["content"],
                                        created_by=request.user)
-        data = NoticeSerializer(notice).data
-        return Response({"error": error, "data": data})
+        return Response({"error": False, "data": NoticeSerializer(notice).data})
 
     def get(self, request):
         """
@@ -42,9 +30,9 @@ class NoticeAdminAPI(APIView):
                 data = NoticeSerializer(notice).data
                 return Response({"error": error, "data": data})
             except Notice.DoesNotExist:
-                data = "Notice does not exist"
+                msg = "Notice does not exist"
                 error = True
-                return Response({"error": error, "data": data})
+                return Response({"error": error, "data": msg})
 
         notices = Notice.objects.all().order_by("-create_time")
         count = notices.count()
@@ -57,23 +45,21 @@ class NoticeAdminAPI(APIView):
         edit notice
         """
         serializer = EditNoticeSerializer(data=request.data)
-        if not serializer.is_valid():
-            error = invalid_serializer(serializer)
-            return Response(error)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
 
         error = False
         try:
-            notice = Notice.objects.get(id=serializer.pop("id"))
+            notice = Notice.objects.get(id=data.pop("id"))
         except Notice.DoesNotExist:
-            data = "Notice does not exist"
+            msg = "Notice does not exist"
             error = True
-            return Response({"error": error, "data": data})
+            return Response({"error": error, "data": msg})
 
-        notice.title = serializer["title"]
-        notice.content = serializer["content"]
+        notice.title = data["title"]
+        notice.content = data["content"]
         notice.save()
-        data = NoticeSerializer(notice).data
-        return Response({"error": error, "data": data})
+        return Response({"error": error, "data": NoticeSerializer(notice).data})
 
     def delete(self, request):
         """
@@ -82,16 +68,40 @@ class NoticeAdminAPI(APIView):
         error = False
         notice_id = request.GET.get("id")
         if not notice_id:
-            data = "Invalid parameter, id is required"
+            msg = "Invalid parameter, id is required"
             error = True
-            return Response({"error": error, "data": data})
+            return Response({"error": error, "data": msg})
 
         try:
             notice = Notice.objects.get(id=notice_id)
         except Notice.DoesNotExist:
-            data = "Notice does not exist"
+            msg = "Notice does not exist"
             error = True
-            return Response({"error": error, "data": data})
+            return Response({"error": error, "data": msg})
 
         notice.delete()
+        return Response({"error": error, "data": None})
+
+
+class CommentAdminAPI(APIView):
+    def put(self, request):
+        """
+        check a comment of notice
+        """
+        serializer = CommentAdminSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
+
+        error = False
+        notice_id = data["notice_id"]
+        comment_id = data["comment_id"]
+        try:
+            comment = Comment.objects.get(id=comment_id, notice_id=notice_id)
+        except Comment.DoesNotExist:
+            msg = "Comment does not exist"
+            error = True
+            return Response({"error": error, "data": msg})
+
+        comment.check = data["check"]
+        comment.save()
         return Response({"error": error, "data": None})
