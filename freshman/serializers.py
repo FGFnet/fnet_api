@@ -17,7 +17,6 @@ class FreshmanSerializer(serializers.ModelSerializer):
 class CreateFreshmanSerializer(serializers.Serializer):
     lc = serializers.CharField()
     name = serializers.CharField(max_length=30)
-    student_id = serializers.CharField(max_length=10, min_length=10)
     # TODO: Add validation(xxx-xxxx-xxx)
     phone_number = serializers.CharField(max_length=13)
     register = serializers.BooleanField()
@@ -30,7 +29,6 @@ class EditFreshmanSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     lc = serializers.CharField()
     name = serializers.CharField(max_length=30)
-    student_id = serializers.CharField(max_length=10, min_length=10)
     # TODO: Add validation(xxx-xxxx-xxx)
     phone_number = serializers.CharField(max_length=13)
     register = serializers.BooleanField()

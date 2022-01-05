@@ -40,7 +40,6 @@ class FreshmanAPI(APIView):
 
         Freshman.objects.create(lc=lc,
                                 name=data["name"],
-                                student_id=data["student_id"],
                                 phone_number=data["phone_number"],
                                 register=data["register"],
                                 department=data["department"])
@@ -99,7 +98,7 @@ class FreshmanFileUploadAPI(APIView):
                 lc = LC.objects.get(name=lc_name)
             except LC.DoesNotExist:
                 continue
-            freshman_list.append(Freshman(lc=lc, name=data[0], department=data[1], student_id=data[2], phone_number=data[3]))
+            freshman_list.append(Freshman(lc=lc, name=data[0], department=data[1], phone_number=data[3]))
         try:
             with transaction.atomic():
                 Freshman.objects.bulk_create(freshman_list)
