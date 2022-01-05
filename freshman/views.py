@@ -6,8 +6,7 @@ from lc.models import LC
 from .models import Freshman
 from .serializers import CreateFreshmanSerializer, EditFreshmanSerializer, FreshmanSerializer, FreshmanFileUploadSerializer
 from django.db import transaction, IntegrityError
-import csv
-import io
+from openpyxl import load_workbook
 
 
 class FreshmanAPI(APIView):
@@ -83,14 +82,12 @@ class FreshmanFileUploadAPI(APIView):
         serializer = FreshmanFileUploadSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         file = serializer.validated_data["file"]
-        decoded_file = file.read().decode("utf-8-sig")
-        io_string = io.StringIO(decoded_file)
-        reader = csv.reader(io_string)
-        data_list = [row for row in reader]
+        rows = load_workbook(file).active.rows
+        data_list = [[cell.value for cell in row] for row in rows]
         # remove header
-        # data_list.pop(0)
+        data_list.pop(0)
+        
         freshman_list = []
-
         for data in data_list:
             # lc_name = data[5]
             lc_name = "lc10"
