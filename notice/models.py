@@ -10,6 +10,7 @@ class Notice(models.Model):
     title = CharField(max_length=500)
     content = TextField(blank=True)
     create_time = DateTimeField(auto_now_add=True, blank=True)
+    last_update_time = DateTimeField(auto_now=True, blank=True)
 
     class Meta:
         db_table = 'notice'
@@ -20,6 +21,7 @@ class Comment(models.Model):
     created_by = ForeignKey(FG, on_delete=CASCADE)
     content = TextField(null=True)
     create_time = DateTimeField(auto_now_add=True, blank=True)
+    last_update_time = DateTimeField(auto_now=True, blank=True)
     check = BooleanField(default=False)
 
     class Meta:
