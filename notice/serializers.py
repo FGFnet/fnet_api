@@ -1,4 +1,4 @@
-from .models import Notice
+from .models import Comment, Notice
 from rest_framework import serializers
 
 
@@ -23,3 +23,19 @@ class CommentAdminSerializer(serializers.Serializer):
     notice_id = serializers.IntegerField()
     comment_id = serializers.IntegerField()
     check = serializers.BooleanField()
+
+
+class CreateCommentSerializer(serializers.Serializer):
+    notice_id = serializers.IntegerField()
+    content = serializers.CharField()
+
+
+class EditCommentSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    content = serializers.CharField()
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = "__all__"
