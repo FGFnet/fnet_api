@@ -8,6 +8,13 @@ class LCSerializer(serializers.ModelSerializer):
         Fields = '__all__'
 
 class CreateLCSerializer(serializers.Serializer):
-    fg_id = serializers.IntegerField()
+    fg = serializers.CharField()
     name = serializers.CharField(max_length=32)
     total = serializers.IntegerField()
+    schedule = serializers.DateField()
+
+class EditLCSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    fg = serializers.CharField()
+    name = serializers.CharField(max_length=32)
+    schedule = serializers.DateField()
