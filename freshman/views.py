@@ -4,7 +4,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.decorators import api_view
 from lc.models import LC
 from .models import Freshman
-from .serializers import CreateFreshmanSerializer, EditFreshmanSerializer, FreshmanSerializer, FreshmanFileUploadSerializer
+from .serializers import CreateFreshmanSerializer, EditFreshmanSerializer, FreshmanSerializer, FreshmanFileUploadSerializer, registerFreshmanSerializer
 from django.db import transaction, IntegrityError
 from openpyxl import load_workbook
 
@@ -106,18 +106,19 @@ class FreshmanFileUploadAPI(APIView):
 
 @api_view(['GET'])
 def getLCMemberList(request):
-    error = False
     lc_id = request.GET.get("id")
     register = request.GET.get("register")
+
     if not lc_id:
-        data = "LC id is required"
-        error = True
-    elif not register:
+        return Response({"error": True, "data": "LC id is required"})
+
+    if not register:
         queryset = Freshman.objects.filter(lc_id=lc_id)
     else:
         queryset = Freshman.objects.filter(lc_id=lc_id, register=True)
+
     data = FreshmanSerializer(queryset, many=True).data
-    return Response({"error": error, "data": data})
+    return Response({"error": False, "data": data})
 
 
 @api_view(['PUT'])
