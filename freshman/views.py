@@ -112,7 +112,25 @@ def getLCMemberList(request):
     if not lc_id:
         data = "LC id is required"
         error = True
+    elif not register:
+        queryset = Freshman.objects.filter(lc_id=lc_id)
     else:
-        queryset = Freshman.objects.filter(lc_id=lc_id, register=register)
-        data = FreshmanSerializer(queryset, many=True).data
+        queryset = Freshman.objects.filter(lc_id=lc_id, register=True)
+    data = FreshmanSerializer(queryset, many=True).data
     return Response({"error": error, "data": data})
+
+
+@api_view(['PUT'])
+def registerFreshman(request):
+    data = request.data
+    serializer = registerFreshmanSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        freshman = Freshman.objects.get(id=data["id"])
+    except Freshman.DoesNotExist:
+        return Response({"error": True, "data": "Freshman does not exist"})
+    
+    freshman.register = data["register"]
+    freshman.save()
+    return Response({"error": False, "data": {}})

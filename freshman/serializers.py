@@ -33,3 +33,7 @@ class EditFreshmanSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=13)
     register = serializers.BooleanField()
     department = serializers.ChoiceField(["인문사회계열", "사회과학계열", "공학계열", "자연과학계열"], allow_blank=True)
+
+class registerFreshmanSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    register = serializers.BooleanField()
