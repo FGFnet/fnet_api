@@ -10,7 +10,7 @@ from .models import FG
 from .serializers import CreateLCSerializer, EditLCSerializer, LCSerializer
 
 # Create your views here.
-class LcAPI(APIView):
+class LCAPI(APIView):
     def get(self, request):
         lc_id = request.GET.get("id")
         error = False
