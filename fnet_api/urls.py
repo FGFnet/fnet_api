@@ -20,4 +20,6 @@ urlpatterns = [
     path('', include('fg.urls')),
     path('', include('notice.urls.user')),
     path('admin/', include('notice.urls.admin')),
+    path('', include("fg.urls.user")),
+    path('admin/', include("fg.urls.admin")),
 ]
