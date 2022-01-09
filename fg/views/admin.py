@@ -28,6 +28,8 @@ class FGAPI(APIView):
         fg_id = request.GET.get("id")
         if fg_id:
             FG.objects.filter(id=fg_id).delete()
+        else:
+            FG.objects.all().delete()
         return Response({})
     
 
