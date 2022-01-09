@@ -1,10 +1,12 @@
 from datetime import date
 from django.core.checks.messages import Error
+from django.db.models import query
 from django.db.models.query import QuerySet
 from django.shortcuts import render
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from .models import LC
 from .models import FG
 from .serializers import CreateLCSerializer, EditLCSerializer, LCSerializer
@@ -72,3 +74,18 @@ class LCAPI(APIView):
         lc.save()
 
         return Response({"error":False, "data":None})
+
+@api_view(['GET'])
+def getLC(request):
+    fg_id = request.GET.get("fg")
+    if not fg_id:
+        return Response({"error":True, "data": "FG does not exist"})
+    
+    try:
+        queryset = LC.objects.get(fg=fg_id)
+        # schedule 대로 정렬 어떻게 해요?
+        data = LCSerializer(queryset, many=True).data
+    except LC.DoesNotExist:
+        return Response({"error": True, "data": "LC does not exist"})
+    
+    return Response({"error": False, "data":data})
