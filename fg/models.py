@@ -34,7 +34,7 @@ class UserManager(BaseUserManager):
 
 class FG(AbstractBaseUser):
     name = models.CharField(max_length=30, unique=True)
-    student_id = models.CharField(max_length=10, validators=[MinLengthValidator(10)], null=False)
+    student_id = models.CharField(max_length=10, validators=[MinLengthValidator(10)], null=True)
     admin = BooleanField(default=False) # True = 운영진, False = 활동기수
 
     USERNAME_FIELD = "name"

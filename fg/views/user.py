@@ -9,9 +9,9 @@ class FGAPI(APIView):
         error = False
         if fg_id:
             try:
-                fg = FG.objects.filter(id=fg_id)
+                fg = FG.objects.get(id=fg_id)
                 data = FGSerializer(fg).data
-            except:
+            except FG.DoesNotExist:
                 data = "FG does not exist"
                 error = True
         else:

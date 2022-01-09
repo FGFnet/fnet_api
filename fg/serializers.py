@@ -6,7 +6,7 @@ from rest_framework import serializers
 from django import forms
 
 class FGSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(required=False)
+    password = serializers.CharField(required=False, default=None)
     class Meta:
         model = FG
         fields = '__all__'
