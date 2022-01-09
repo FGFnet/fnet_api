@@ -6,13 +6,16 @@ from .models import Freshman
 
 class FreshmanSerializer(serializers.ModelSerializer):
     phone_number = serializers.SerializerMethodField()
-
+    lc = serializers.SerializerMethodField()
     class Meta:
         model = Freshman
         fields = '__all__'
 
     def get_phone_number(self, obj):
         return obj.phone_number[4:8]
+
+    def get_lc(self, obj):
+        return obj.lc.name
 
 class CreateFreshmanSerializer(serializers.Serializer):
     lc = serializers.CharField()
