@@ -106,11 +106,16 @@ class FreshmanFileUploadAPI(APIView):
 
 @api_view(['GET'])
 def getLCMemberList(request):
-    lc_id = request.GET.get("id")
+    lc_name = request.GET.get("name")
     register = request.GET.get("register")
 
-    if not lc_id:
-        return Response({"error": True, "data": "LC id is required"})
+    if not lc_name:
+        return Response({"error": True, "data": "LC name is required"})
+
+    try:
+        lc_id = LC.objects.get(name=lc_name)
+    except LC.DoesNotExist:
+        return Response({"error": True, "data": "LC does not exist"})
 
     if not register:
         queryset = Freshman.objects.filter(lc_id=lc_id)
