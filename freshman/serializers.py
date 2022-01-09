@@ -23,7 +23,7 @@ class CreateFreshmanSerializer(serializers.Serializer):
     # TODO: Add validation(xxx-xxxx-xxx)
     phone_number = serializers.CharField(max_length=13)
     register = serializers.BooleanField()
-    department = serializers.ChoiceField(["인문사회계열", "사회과학계열", "공학계열", "자연과학계열"], allow_blank=True)
+    department = serializers.ChoiceField(["인문사회", "사회과학", "공학", "자연과학"], allow_blank=True)
 
 class FreshmanFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
@@ -35,7 +35,7 @@ class EditFreshmanSerializer(serializers.Serializer):
     # TODO: Add validation(xxx-xxxx-xxx)
     phone_number = serializers.CharField(max_length=13)
     register = serializers.BooleanField()
-    department = serializers.ChoiceField(["인문사회계열", "사회과학계열", "공학계열", "자연과학계열"], allow_blank=True)
+    department = serializers.ChoiceField(["인문사회", "사회과학", "공학", "자연과학"], allow_blank=True)
 
 class registerFreshmanSerializer(serializers.Serializer):
     id = serializers.IntegerField()
