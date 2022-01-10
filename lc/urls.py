@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import LcAPI
+from .views import *
 
 urlpatterns = [
-    path('lc/', LcAPI.as_view(), name="lc_api"),
+    path('lc/', LCAPI.as_view(), name="lc_api"),
+    path('lc/list', getLC),
 ]
