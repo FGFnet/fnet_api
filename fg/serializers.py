@@ -13,3 +13,6 @@ class FGSerializer(serializers.ModelSerializer):
 
 class FGFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
+class FGLoginSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    password = serializers.CharField()
