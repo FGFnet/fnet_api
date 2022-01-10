@@ -10,22 +10,22 @@ class AdminType(object):
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
-    def create_user(self, name, student_id):
+    def create_user(self, name, password):
         try:
             fg = self.model(
-                name = name, student_id=student_id
+                name = name, student_id = password
             )
-            fg.set_password(student_id)
+            fg.set_password(password)
             fg.save(using=self._db)
             return fg
         except Exception as e:
             print(e)
-    def create_superuser(self, name, student_id):
+    def create_superuser(self, name, password):
         try:
             fg = self.create_user(
-                name=name, student_id = student_id
+                name=name, password = password
             )
-            fg.admin = True
+            fg.is_admin = True
             fg.save(using=self._db)
             return fg
         except Exception as e:
@@ -35,13 +35,14 @@ class UserManager(BaseUserManager):
 class FG(AbstractBaseUser):
     name = models.CharField(max_length=30, unique=True)
     student_id = models.CharField(max_length=10, validators=[MinLengthValidator(10)], null=True)
-    admin = BooleanField(default=False) # True = 운영진, False = 활동기수
-
-    USERNAME_FIELD = "name"
-    REQUIRED_FIELD = []
+    is_admin = models.BooleanField(default=False) # True = 운영진, False = 활동기수
+    is_active = models.BooleanField(default=True)
 
     objects = UserManager()
     
+    USERNAME_FIELD = "name"
+    REQUIRED_FIELDS = []
+    
     class Meta:
         db_table = 'fg'
-        ordering = ['-admin', 'student_id']
+        ordering = ['is_admin', 'student_id']
