@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 class FGAPI(APIView):
     def get(self, request):
-        fg_id = request.GET.get("id")
+        fg_id = request.user.id
         error = False
         if fg_id:
             try:
