@@ -10,20 +10,21 @@ class AdminType(object):
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
-    def create_user(self, name, password):
+    def create_user(self, name, student_id):
         try:
             fg = self.model(
-                name = name, student_id = password
+                name = name, student_id = student_id
             )
-            fg.set_password(password)
+            fg.set_password(student_id)
             fg.save(using=self._db)
             return fg
         except Exception as e:
             print(e)
-    def create_superuser(self, name, password):
+    def create_superuser(self, name, password, student_id="root"):
         try:
             fg = self.create_user(
-                name=name, password = password
+                name=name, 
+                student_id = password if password else student_id
             )
             fg.is_admin = True
             fg.save(using=self._db)
