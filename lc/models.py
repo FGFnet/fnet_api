@@ -6,11 +6,12 @@ from fg.models import FG
 
 # Create your models here.
 class LC(models.Model):
-    fg = ForeignKey(FG, on_delete=CASCADE)
+    fg_n = ForeignKey(FG, on_delete=CASCADE)
+    fg_s = ForeignKey(FG, on_delete=CASCADE)
     name = CharField(max_length=10)
-    total = IntegerField()
+    #total = IntegerField()
     schedule = DateField(null=True)
-
+    total_register = IntegerField()
     class Meta:
         db_table = 'lc'
         ordering = ['name']

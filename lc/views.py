@@ -10,6 +10,7 @@ from rest_framework.decorators import api_view
 from .models import LC
 from .models import FG
 from .serializers import CreateLCSerializer, EditLCSerializer, LCSerializer
+import dateutil # 이거 왜 경고 뜨는지 아시는분?
 
 # Create your views here.
 class LCAPI(APIView):
@@ -43,29 +44,32 @@ class LCAPI(APIView):
     
     def post(self, request):
         data = request.data
+        data["schedule"] = dateutil.parser.parse(date["schedule"])
         serializer = CreateLCSerializer(data=data)
         if not serializer.is_valid():
             return Response({"error": True, "data":"Not valid"})
         
         try:
+            # 로그인 fg id 어떻게 가져오나요?
             fg = FG.objects.get(name=data["fg"])
         except FG.DoesNotExist:
             return Response({"error": True, "data": "FG does not exist"})
 
         LC.objects.create(fg=fg,
                           name=data["name"],
-                          total=data["total"],
-                          schedule=None)
+                          #total=data["total"],
+                          schedule=data["schedule"])
         return Response({"error": False, "data":serializer.data})
 
     def put(self, request):
         data = request.data
+        data["schedule"] = dateutil.parser.parse(date["schedule"])
         serializer = EditLCSerializer(data=data)
         if not serializer.is_valid():
             return Response({"error": True, "data":"Not valid"})
 
         try:
-            lc = LC.objects.get(id=data.pop("id"))
+            lc = LC.objects.get(name=data["name"])
         except LC.DoesNotExist:
             return Response({"error":True, "data":"LC does not exist"})
         
@@ -77,6 +81,7 @@ class LCAPI(APIView):
 
 @api_view(['GET'])
 def getLC(request):
+    # 로그인한 fg id를 어떻게 가져오죠?
     fg_id = request.GET.get("fg")
     if not fg_id:
         return Response({"error":True, "data": "FG does not exist"})
