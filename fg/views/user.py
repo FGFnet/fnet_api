@@ -8,8 +8,12 @@ from rest_framework.response import Response
 
 class FGAPI(APIView):
     def get(self, request):
-        fg_id = request.user.id
-        error = False
+        if not request.user.is_authenticated:
+            return Response({"error": True, "data": "login required"})
+        print(request.GET.get('id'))
+        fg_id = request.GET.get("id")
+        if not fg_id:
+            fg_id = request.user.id
         if fg_id:
             try:
                 fg = FG.objects.get(id=fg_id)
@@ -20,7 +24,7 @@ class FGAPI(APIView):
         else:
             data = "Invalid parameter, id is required."
             error = True
-        return Response({"error": error, "data": data})
+        return Response({"error": False, "data": data})
 
 class FGLoginAPI(APIView):
     def post(self, request):
