@@ -68,6 +68,8 @@ TEMPLATES = [
     },
 ]
 
+DEBUG = True
+
 WSGI_APPLICATION = 'fnet_api.wsgi.application'
 
 

@@ -1,5 +1,5 @@
-from fg.models import FG
-from fg.serializers import FGSerializer, FGLoginSerializer
+from ..models import FG
+from ..serializers.py import FGSerializer, FGLoginSerializer
 
 from django.contrib import auth
 

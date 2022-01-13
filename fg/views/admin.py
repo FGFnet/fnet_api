@@ -1,5 +1,5 @@
-from fg.models import FG
-from fg.serializers import (FGSerializer, FGFileUploadSerializer, CreateFGSerializer)
+from ..models import FG
+from ..serializers import (FGSerializer, FGFileUploadSerializer, CreateFGSerializer)
 from freshman.models import Freshman
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
