@@ -15,7 +15,7 @@ n=0
 while [ $n -lt 2 ]
 do
     python manage.py migrate --no-input &&
-    echo "from django.contrib.auth.models import User; User.objects.create_superuser('root', 'root@example.com', 'rootroot')" | python manage.py shell && 
+    echo "from django.contrib.auth.models import User; User.objects.create_superuser('root', 'rootroot')" | python manage.py shell && 
     break
     n=$(($n+1))
     echo "Failed to migrate, going to retry..."
