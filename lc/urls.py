@@ -4,5 +4,4 @@ from .views import *
 urlpatterns = [
     path('lc/', LCAPI.as_view(), name="lc_api"),
     path('lc/list', getLCList),
-    path('lc/find', getLC),
 ]
