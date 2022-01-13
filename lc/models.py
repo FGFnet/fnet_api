@@ -8,7 +8,6 @@ from datetime import datetime
 # Create your models here.
 class LC(models.Model):
     fg_n = ForeignKey(FG, on_delete=CASCADE, null=True, related_name='fg_n')
-    #fg_n = IntegerField()
     fg_s = ForeignKey(FG, on_delete=CASCADE, null=True, related_name='fg_s')
     name = CharField(max_length=10)
     schedule = DateField(default=datetime.now)

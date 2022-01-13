@@ -5,13 +5,12 @@ from .models import LC
 class LCSerializer(serializers.ModelSerializer):
     class Meta:
         model = LC
-        Fields = '__all__'
+        fields = '__all__'
 
 class CreateLCSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=32)
     schedule = serializers.DateField()
 
 class EditLCSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
     name = serializers.CharField(max_length=32)
     schedule = serializers.DateField()
