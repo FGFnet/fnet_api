@@ -121,6 +121,6 @@ def getLCList(self, request):
             queryset = LC.objects.get(fg_s=user.id)
             data = LCSerializer(queryset, many=True).data
     except LC.DoesNotExist:
-        return Response({"error": True, "data": "LC does not exist"})
+        return Response({"error": False, "data": None})
     
     return Response({"error": False, "data":data})
