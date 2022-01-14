@@ -10,7 +10,7 @@ class FGAPI(APIView):
     def get(self, request):
         if not request.user.is_authenticated:
             return Response({"error": True, "data": "login required"})
-        print(request.GET.get('id'))
+
         fg_id = request.GET.get("id")
         if not fg_id:
             fg_id = request.user.id
