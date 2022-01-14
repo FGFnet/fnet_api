@@ -17,6 +17,7 @@ class CreateFGSerializer(serializers.Serializer):
     name = serializers.CharField()
     student_id = serializers.CharField()
     is_admin = serializers.BooleanField()
+    campus = serializers.CharField()
 class FGLoginSerializer(serializers.Serializer):
     name = serializers.CharField()
     password = serializers.CharField()
