@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import LC
 from .models import FG
-from .serializers import CreateLCSerializer, EditLCSerializer, LCSerializer
+from .serializers import LCSerializer, UpdateLCSerialiser
 import dateutil.parser
 import datetime
 
@@ -17,110 +17,79 @@ import datetime
 class LCAPI(APIView):
     def get(self, request):
         user = request.user
-        if user.is_authenticated:
-            return  Response({"error": True, "data": "login required"})
-
-        error = False
         lc_name = request.GET.get("name")
-        if not lc_name:
-            quieryset = LC.objects.all()
-            data = LCSerializer(quieryset, many=True).data
-        else:
+        if lc_name:
             try:
                 queryset = LC.objects.get(name=lc_name)
                 data = LCSerializer(queryset).data
             except LC.DoesNotExist:
-                data = "LC does not exist"
-                error = True
-        return Response({"error":error, "data":data})
+                return Response({"error": True, "data": "LC name error"})
+        else:
+            if user.campus == 'n':
+                queryset = LC.objects.get(fg_n=user.id)
+            else:
+                queryset = LC.objects.get(fg_s=user.id)
+            data = LCSerializer(queryset, many=True).data
+        return Response({"error":False, "data":data})
     
     def delete(self, request):
         if request.user.is_authenticated:
             return  Response({"error": True, "data": "login required"})
         
-        lc_name = request.GET.get("name")
+        lc_id = request.GET.get("id")
         if not lc_name:
             return Response({"error":True, "data":"Invalid parameter"})
 
         try:
-            queryset = LC.objects.get(name=lc_name)
+            queryset = LC.objects.get(id=lc_id)
             queryset.delete()
         except LC.DoesNotExist:
             return Response({"error":True, "data":"LC does not exist"})
         
         return Response({"error":False, "data":None})
-    
+
     def post(self, request):
-        user = request.user
-        if user.is_authenticated:
-            return  Response({"error": True, "data": "login required"})
         data = request.data
         data['schedule'] = dateutil.parser.parse(data["schedule"]).date()
 
-        # NO MULTIPLE OBJECT!
-        try:
-            queryset = LC.objects.get(name=data['name'])
-        except LC.DoesNotExist:
-            serializer = CreateLCSerializer(data=data)
-            if not serializer.is_valid():
-                return Response({"error": True, "data":"Not valid"})
-
-            if user.department == 'n':
-                LC.objects.create(fg_n=fg,
-                                fg_s=null,
-                                name=data["name"],
-                                schedule=data["schedule"])
-            else:
-                LC.objects.create(fg_n=null,
-                                fg_s=fg,
-                                name=data["name"],
-                                schedule=data["schedule"])
-
-            return Response({"error": False, "data":serializer.data})
-
-        return Response({"error": True, "data": "LC already exists"})
-
-    def put(self, request):
-        user = request.user
-        if user.is_authenticated:
-            return  Response({"error": True, "data": "login required"})
-        
-        data = request.data
-        data['schedule'] = dateutil.parser.parse(data["schedule"]).date()
-        serializer = EditLCSerializer(data=data)
-        if not serializer.is_valid():
+        serializer = updateLCSerializer(data=data)
+        if not serializer.is_valid:
             return Response({"error": True, "data":"Not valid"})
-
+        
+        data = serializer.data
+        old_id = data['old_id']
+        if old_id > 0:
+            try:
+                oldLc = LC.objects.get(id=old_id)
+                if user.campus == 'n':
+                    oldLc.fg_n = None
+                else:
+                    oldLc.fg_s = None
+            except LC.DoesNotExist:
+                return Response({"error":True, "data": "original LC does not exist"})
+        
+        user = request.user
         try:
             lc = LC.objects.get(name=data['name'])
+            if user.campus == 'n':
+                lc.fg_n = user.id
+            else:
+                lc.fg_s = user.id
+            
+            lc.schedule = data['schedule']
+            lc.save()
+            
         except LC.DoesNotExist:
-            return Response({"error":True, "data":"LC does not exist"})
+            if user.campus == 'n':
+                LC.objects.create(fg_n=user.id,
+                                fg_s=None,
+                                name=data['name'],
+                                schedule=data['schedule'])
+            else:
+                LC.objects.create(fg_n=None,
+                                fg_s=user.id,
+                                name=data['name'],
+                                schedule=data['schedule'])
         
-        if user.department == 'n':
-            lc.fg_n = user.id
-        else:
-            lc.fg_s = user.id
-        
-        lc.name = data['name']
-        lc.schedule = data['schedule']
-        lc.save()
-
-        return Response({"error":False, "data":None})
-
-@api_view(['GET'])
-# FG의 담당 모든 LC 목록을 return
-def getLCList(self, request):
-    user = request.user
-    if user.is_authenticated:
-            return  Response({"error": True, "data": "Login required"})
+        return Response({"error": False, "data": "success"})
     
-    try:
-        if user.department == 'n':
-            queryset = LC.objects.get(fg_n=user.id)
-        else:
-            queryset = LC.objects.get(fg_s=user.id)
-            data = LCSerializer(queryset, many=True).data
-    except LC.DoesNotExist:
-        return Response({"error": False, "data": None})
-    
-    return Response({"error": False, "data":data})
