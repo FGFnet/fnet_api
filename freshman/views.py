@@ -86,11 +86,11 @@ class FreshmanFileUploadAPI(APIView):
         data_list = [[cell.value for cell in row] for row in rows]
         # remove header
         data_list.pop(0)
-        
+
         freshman_list = []
         for data in data_list:
             # lc_name = data[5]
-            lc_name = "lc10"
+            lc_name = "LC10"
             try:
                 lc = LC.objects.get(name=lc_name)
             except LC.DoesNotExist:
@@ -100,7 +100,7 @@ class FreshmanFileUploadAPI(APIView):
             with transaction.atomic():
                 Freshman.objects.bulk_create(freshman_list)
         except IntegrityError as e:
-            return self.Response({"data": str(e).split("\n")[1]})
+            return Response({"data": str(e).split("\n")[0]})
         return Response({})
 
 
