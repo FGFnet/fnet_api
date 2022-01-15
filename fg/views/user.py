@@ -6,12 +6,7 @@ from django.contrib import auth
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication 
-
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-
-    def enforce_csrf(self, request):
-        return  # To not perform the csrf check previously happening
+from fnet_api.csrf import CSRFExemptAPIView
 
 class FGAPI(APIView):
     def get(self, request):
@@ -34,8 +29,7 @@ class FGAPI(APIView):
         return Response({"error": False, "data": data})
 
 
-class FGLoginAPI(APIView):
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+class FGLoginAPI(CSRFExemptAPIView):
     def post(self, request):
         data = request.data
         serializer = FGLoginSerializer(data = data)
