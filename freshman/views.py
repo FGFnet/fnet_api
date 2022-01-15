@@ -2,12 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from rest_framework.decorators import api_view
+
 from lc.models import LC
 from .models import Freshman
 from .serializers import CreateFreshmanSerializer, EditFreshmanSerializer, FreshmanSerializer, FreshmanFileUploadSerializer, registerFreshmanSerializer
+
 from django.db import transaction, IntegrityError
 from openpyxl import load_workbook
-
+from fnet_api.csrf import CSRFExemptAPIView
 
 class FreshmanAPI(APIView):
     def get(self, request):
@@ -104,6 +106,23 @@ class FreshmanFileUploadAPI(APIView):
         return Response({})
 
 
+
+class RegisterFreshmanAPI(CSRFExemptAPIView):
+    def put(self, request):
+        data = request.data
+        serializer = registerFreshmanSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            freshman = Freshman.objects.get(id=data["id"])
+        except Freshman.DoesNotExist:
+            return Response({"error": True, "data": "Freshman does not exist"})
+        
+        freshman.register = not freshman.register
+        freshman.save()
+        return Response({"error": False, "data": {}})
+
+
 @api_view(['GET'])
 def getLCMemberList(request):
     lc_name = request.GET.get("name")
@@ -126,17 +145,12 @@ def getLCMemberList(request):
     return Response({"error": False, "data": data})
 
 
-@api_view(['PUT'])
-def registerFreshman(request):
-    data = request.data
-    serializer = registerFreshmanSerializer(data=data)
-    serializer.is_valid(raise_exception=True)
 
-    try:
-        freshman = Freshman.objects.get(id=data["id"])
-    except Freshman.DoesNotExist:
-        return Response({"error": True, "data": "Freshman does not exist"})
-    
-    freshman.register = data["register"]
-    freshman.save()
-    return Response({"error": False, "data": {}})
+@api_view(['GET'])
+def searchFreshman(request):
+    query = request.GET.get("query")
+    if not query:
+        freshman = Freshman.objects.all()
+    else:
+        freshman = Freshman.objects.filter(name=query)
+    return Response({"error": False, "data": FreshmanSerializer(freshman, many=True).data})

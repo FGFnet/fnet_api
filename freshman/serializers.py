@@ -39,4 +39,3 @@ class EditFreshmanSerializer(serializers.Serializer):
 
 class registerFreshmanSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    register = serializers.BooleanField()
