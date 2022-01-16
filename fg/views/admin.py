@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from django.db import transaction, IntegrityError
-
+from fnet_api.csrf import CSRFExemptAPIView
 from openpyxl import load_workbook
 
 
@@ -64,7 +64,7 @@ class FGAPI(APIView):
         return Response({"error": False, "data": data})
     
 
-class FGFileUploadAPI(APIView):
+class FGFileUploadAPI(CSRFExemptAPIView):
     parser_classes = (MultiPartParser,)
 
     #TODO: 예외처리
@@ -77,7 +77,7 @@ class FGFileUploadAPI(APIView):
         error = False
 
         load_wb = load_workbook(file, read_only=True, data_only=True)
-        load_ws = load_wb['Sheet1']
+        load_ws = load_wb.active
 
         fg_info = []
         index = 0
@@ -86,9 +86,11 @@ class FGFileUploadAPI(APIView):
                 row_value = []
                 for cell in row:
                     row_value.append(cell.value)
+                if FG.objects.filter(name=row_value[0], student_id=row_value[2]).exists():
+                    continue
                 fg = FG.objects.create(name=row_value[0], 
-                                    student_id=row_value[1],
-                                    is_admin=row_value[2])
+                                       student_id=row_value[2],
+                                       is_admin=False)
                 fg_info.append(fg)
             #header 제거
             else:
