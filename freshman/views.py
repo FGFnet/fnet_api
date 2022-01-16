@@ -76,7 +76,7 @@ class FreshmanAPI(APIView):
         return Response({})
     
 
-class FreshmanFileUploadAPI(APIView):
+class FreshmanFileUploadAPI(CSRFExemptAPIView):
     parser_classes = (MultiPartParser,)
 
     # TODO: Add exception handling
