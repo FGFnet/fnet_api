@@ -97,6 +97,8 @@ class FreshmanFileUploadAPI(APIView):
                 lc = LC.objects.get(name=lc_name)
             except LC.DoesNotExist:
                 continue
+            if Freshman.objects.filter(name=data[0], phone_number=data[3]).exists():
+                continue
             freshman_list.append(Freshman(lc=lc, name=data[0], department=data[1], phone_number=data[3]))
         try:
             with transaction.atomic():
