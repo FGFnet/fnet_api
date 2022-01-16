@@ -1,10 +1,17 @@
 from ..models import FG
-from ..serializers import FGSerializer, FGLoginSerializer
+from ..serializers import FGSerializer, FGLoginSerializer, UserInfoSerializer
 
 from django.contrib import auth
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication 
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
 
 class FGAPI(APIView):
     def get(self, request):
@@ -26,7 +33,9 @@ class FGAPI(APIView):
             error = True
         return Response({"error": False, "data": data})
 
+
 class FGLoginAPI(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     def post(self, request):
         data = request.data
         serializer = FGLoginSerializer(data = data)
@@ -37,10 +46,18 @@ class FGLoginAPI(APIView):
         if not fg:
             return Response({ "error": True, "data": "Invalid name or student id" })
         auth.login(request, fg)
+
         return Response({ "error": False, "data": "Login Succeeded" })
  
 class FGLogoutAPI(APIView):
     def get(self, request):
         auth.logout(request)
         return Response({ "error": False, "data": "Logout Succeeded" })
-        
+
+
+@api_view(['GET'])
+def getUserInfo(request):
+    user = request.user
+    if not user.is_authenticated:
+        return Response({ "error": True, "data": "Invalid access" })
+    return Response({"error": False, "data": UserInfoSerializer(user).data})

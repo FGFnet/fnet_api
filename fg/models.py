@@ -38,7 +38,7 @@ class FG(AbstractBaseUser):
     student_id = models.CharField(max_length=10, validators=[MinLengthValidator(10)], null=True)
     is_admin = models.BooleanField(default=False) # True = 운영진, False = 활동기수
     is_active = models.BooleanField(default=True)
-    campus = models.CharField()
+    campus = models.CharField(max_length=10, default="n")
 
     objects = UserManager()
     
