@@ -5,7 +5,8 @@ from rest_framework.decorators import api_view
 
 from lc.models import LC
 from .models import Freshman
-from .serializers import CreateFreshmanSerializer, EditFreshmanSerializer, FreshmanSerializer, FreshmanFileUploadSerializer, registerFreshmanSerializer
+from .serializers import (CreateFreshmanSerializer, EditFreshmanSerializer, FreshmanSerializer, 
+                            FreshmanFileUploadSerializer, registerFreshmanSerializer, FreshmanTableDataSerializer)
 
 from django.db import transaction, IntegrityError
 from openpyxl import load_workbook
@@ -143,7 +144,7 @@ def getLCMemberList(request):
     else:
         queryset = Freshman.objects.filter(lc_id=lc_id, register=True)
 
-    data = FreshmanSerializer(queryset, many=True).data
+    data = FreshmanTableDataSerializer(queryset, many=True).data
     return Response({"error": False, "data": data})
 
 
