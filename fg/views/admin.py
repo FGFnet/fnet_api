@@ -4,7 +4,9 @@ from freshman.models import Freshman
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from django.db import transaction, IntegrityError
+from django.contrib.auth.hashers import make_password
 from fnet_api.csrf import CSRFExemptAPIView
 from openpyxl import load_workbook
 
@@ -13,7 +15,6 @@ class FGAPI(APIView):
     def get(self, request):
         if not request.user.is_admin:
             return Response({"error": True, "data": "Admin role required"})
-        print(request.user.id)
         fg_id = request.GET.get("id")
         error = False
         if fg_id:
@@ -90,7 +91,8 @@ class FGFileUploadAPI(CSRFExemptAPIView):
                     continue
                 fg = FG.objects.create(name=row_value[0], 
                                        student_id=row_value[2],
-                                       is_admin=False)
+                                       is_admin=False,
+                                       password=make_password(str(row_value[2])))
                 fg_info.append(fg)
             #header 제거
             else:
@@ -103,3 +105,13 @@ class FGFileUploadAPI(CSRFExemptAPIView):
 
         data = FGSerializer(fg_info, many=True).data
         return Response({"error": error, "data": data})
+
+
+@api_view(['GET'])
+def searchFG(request):
+    query = request.GET.get("query")
+    if not query:
+        fg = FG.objects.all()
+    else:
+        fg = FG.objects.filter(name=query)
+    return Response({"error": False, "data": FGSerializer(fg, many=True).data})
