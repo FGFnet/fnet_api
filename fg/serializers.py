@@ -6,10 +6,10 @@ from rest_framework import serializers
 from django import forms
 
 class FGSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(required=False, default=None)
+    # password = serializers.CharField(required=False, default=None)
     class Meta:
         model = FG
-        fields = '__all__'
+        fields = ['id', 'name', 'student_id', 'campus', 'is_admin']
 
 class FGFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
