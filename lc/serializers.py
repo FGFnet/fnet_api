@@ -7,7 +7,7 @@ class LCSerializer(serializers.ModelSerializer):
         model = LC
         fields = '__all__'
 
-class UpdateLCSerialiser(serializers.Serializer):
-    old_id = serializers.IntegerField()
+class UpdateLCSerializer(serializers.Serializer):
+    # old_id = serializers.IntegerField()
     name = serializers.CharField()
     schedule = serializers.DateField()

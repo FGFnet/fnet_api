@@ -9,12 +9,13 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import LC
 from .models import FG
-from .serializers import LCSerializer, UpdateLCSerialiser
+from .serializers import LCSerializer, UpdateLCSerializer
 import dateutil.parser
 import datetime
+from fnet_api.csrf import CSRFExemptAPIView
 
 # Create your views here.
-class LCAPI(APIView):
+class LCAPI(CSRFExemptAPIView):
     def get(self, request):
         user = request.user
         lc_name = request.GET.get("name")
@@ -26,9 +27,9 @@ class LCAPI(APIView):
                 return Response({"error": True, "data": "LC name error"})
         else:
             if user.campus == 'n':
-                queryset = LC.objects.get(fg_n=user.id)
+                queryset = LC.objects.filter(fg_n=user.id)
             else:
-                queryset = LC.objects.get(fg_s=user.id)
+                queryset = LC.objects.filter(fg_s=user.id)
             data = LCSerializer(queryset, many=True).data
         return Response({"error":False, "data":data})
     
@@ -49,45 +50,35 @@ class LCAPI(APIView):
         return Response({"error":False, "data":None})
 
     def post(self, request):
+        user = request.user
         data = request.data
         data['schedule'] = dateutil.parser.parse(data["schedule"]).date()
 
-        serializer = updateLCSerializer(data=data)
-        if not serializer.is_valid:
-            return Response({"error": True, "data":"Not valid"})
+        serializer = UpdateLCSerializer(data=data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response({"error": True, "data":"Invalid data"})
         
         data = serializer.data
-        old_id = data['old_id']
-        if old_id > 0:
-            try:
-                oldLc = LC.objects.get(id=old_id)
-                if user.campus == 'n':
-                    oldLc.fg_n = None
-                else:
-                    oldLc.fg_s = None
-            except LC.DoesNotExist:
-                return Response({"error":True, "data": "original LC does not exist"})
         
-        user = request.user
         try:
             lc = LC.objects.get(name=data['name'])
             if user.campus == 'n':
-                lc.fg_n = user.id
+                lc.fg_n = user
             else:
-                lc.fg_s = user.id
+                lc.fg_s = user
             
             lc.schedule = data['schedule']
             lc.save()
             
         except LC.DoesNotExist:
             if user.campus == 'n':
-                LC.objects.create(fg_n=user.id,
+                LC.objects.create(fg_n=user,
                                 fg_s=None,
                                 name=data['name'],
                                 schedule=data['schedule'])
             else:
                 LC.objects.create(fg_n=None,
-                                fg_s=user.id,
+                                fg_s=user,
                                 name=data['name'],
                                 schedule=data['schedule'])
         
