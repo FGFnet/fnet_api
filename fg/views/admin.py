@@ -25,7 +25,7 @@ class FGAPI(APIView):
                 data = "FG does not exist"
                 error = True
         else:
-            queryset = FG.objects.all().order_by("-is_admin")
+            queryset = FG.objects.all().order_by("-is_admin", "name")
             data = FGSerializer(queryset, many=True).data
         return Response({"error": error, "data": data})
 
