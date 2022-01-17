@@ -93,14 +93,14 @@ class FreshmanFileUploadAPI(CSRFExemptAPIView):
         freshman_list = []
         for data in data_list:
             # lc_name = data[5]
-            lc_name = "LC10"
+            lc_name = data[3]
             try:
                 lc = LC.objects.get(name=lc_name)
             except LC.DoesNotExist:
                 continue
-            if Freshman.objects.filter(name=data[0], phone_number=data[3]).exists():
+            if Freshman.objects.filter(name=data[1], phone_number=data[2]).exists():
                 continue
-            freshman_list.append(Freshman(lc=lc, name=data[0], department=data[1], phone_number=data[3]))
+            freshman_list.append(Freshman(lc=lc, name=data[1], department=data[0], phone_number=data[2]))
         try:
             with transaction.atomic():
                 Freshman.objects.bulk_create(freshman_list)
