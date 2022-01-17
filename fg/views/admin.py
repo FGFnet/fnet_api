@@ -51,7 +51,8 @@ class FGAPI(APIView):
                             )
         else:
             fg = FG.objects.create_user(name=data["name"], 
-                            student_id=data["student_id"]
+                            student_id=data["student_id"],
+                            campus=data["campus"]
                             )
 
         # try:
@@ -87,12 +88,13 @@ class FGFileUploadAPI(CSRFExemptAPIView):
                 row_value = []
                 for cell in row:
                     row_value.append(cell.value)
-                if FG.objects.filter(name=row_value[0], student_id=row_value[2]).exists():
+                if FG.objects.filter(name=row_value[0], student_id=row_value[1]).exists():
                     continue
                 fg = FG.objects.create(name=row_value[0], 
-                                       student_id=row_value[2],
-                                       is_admin=False,
-                                       password=make_password(str(row_value[2])))
+                                       student_id=row_value[1],
+                                       is_admin=row_value[2],
+                                       campus=row_value[3],
+                                       password=make_password(str(row_value[1])))
                 fg_info.append(fg)
             #header 제거
             else:
