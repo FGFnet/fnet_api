@@ -1,5 +1,6 @@
 from .models import Comment, Notice
 from rest_framework import serializers
+from fg.serializers import FGSerializer
 
 
 class CreateNoticeSerializer(serializers.Serializer):
@@ -36,6 +37,7 @@ class EditCommentSerializer(serializers.Serializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    created_by = FGSerializer()
     class Meta:
         model = Comment
         fields = "__all__"
