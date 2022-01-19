@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import LC
 from .models import FG
-from .serializers import LCSerializer, UpdateLCSerializer
+from .serializers import LCSerializer, UpdateLCSerializer, CreateLCSerializer
 import dateutil.parser
 import datetime
 from fnet_api.csrf import CSRFExemptAPIView
@@ -52,6 +52,22 @@ class LCAPI(CSRFExemptAPIView):
     def post(self, request):
         user = request.user
         data = request.data
+        serializer = CreateLCSerializer(data=data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response({"error": True, "data": "Invalid data"})
+        
+        data = serializer.data
+        start, end = data['start'], data['end']
+        for num in range(start, end+1):
+            LC.objects.create(fg_n=None,
+                            fg_s=None,
+                            name='LC'+'%02d'%(num))
+        
+        return Response({"error":False, "data":"success"})
+
+    def put(self, request):
+        user = request.user
+        data = request.data
         data['schedule'] = dateutil.parser.parse(data["schedule"]).date()
 
         serializer = UpdateLCSerializer(data=data)
@@ -71,16 +87,7 @@ class LCAPI(CSRFExemptAPIView):
             lc.save()
             
         except LC.DoesNotExist:
-            if user.campus == 'n':
-                LC.objects.create(fg_n=user,
-                                fg_s=None,
-                                name=data['name'],
-                                schedule=data['schedule'])
-            else:
-                LC.objects.create(fg_n=None,
-                                fg_s=user,
-                                name=data['name'],
-                                schedule=data['schedule'])
+            return Response({"error": True, "data": "LC does not exist"})
         
         return Response({"error": False, "data": "success"})
     

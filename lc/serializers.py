@@ -7,6 +7,10 @@ class LCSerializer(serializers.ModelSerializer):
         model = LC
         fields = '__all__'
 
+class CreateLCSerializer(serializers.Serializer):
+    start = serializers.IntegerField()
+    end = serializers.IntegerField()
+
 class UpdateLCSerializer(serializers.Serializer):
     # old_id = serializers.IntegerField()
     name = serializers.CharField()
